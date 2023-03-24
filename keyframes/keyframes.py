@@ -32,17 +32,25 @@ class KeyFramesExtractor:
     @profile
     def get_keyframes(cls, video, gpu=settings.GPU, features_batch_size=settings.FEATURE_BATCH_SIZE,
                       frames_mode=0, rl_mode=0, image_assessment_mode=0):
+        #frames_mode: 0-直接提取图片，1-先将视频转成mp4，再提取
         timings = {}
+        #从视频抽帧，放入tmp临时目录中，帧图片路径在frames_paths数组中
         (frames_paths, all_frames_tmp_dir), get_frames_timing = cls._get_all_frames(video, mode=frames_mode)
         timings["get_frames_time"] = get_frames_timing
+        #读取帧图片
         frames = cls._get_frames(frames_paths)
+        #使用caffe的bvlc_googlenet模型对图片进行分类
         features, get_features_time = cls._get_features(frames, gpu, features_batch_size)
         timings["get_features_time"] = get_features_time
         norm_features = normalize(features)
+        #暂不知道有什么用
         change_points, frames_per_segment = cls._get_segments(norm_features)
+        #关键帧识别模型
         probs, highlightness_time = cls._get_probs(norm_features, gpu, mode=rl_mode)
         timings["highlightness_time"] = highlightness_time
+        #获取关键帧
         keyframes = cls._get_keyframes(frames, probs, change_points, frames_per_segment)
+
         chosen_frames, second_filtering_time = cls._get_popularity_chosen_frames(keyframes, features, image_assessment_mode)
         timings["second_filtering_time"] = second_filtering_time
         shutil.rmtree(jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}"))
@@ -50,16 +58,22 @@ class KeyFramesExtractor:
 
     @staticmethod
     @profile
-    def _get_all_frames(video, mode=0):
+    def _get_all_frames(video, mode=0): #mode=framemode,
         all_frames_tmp_dir = uuid.uuid4().hex
         os.mkdir(jj(settings.TMP_DIR, all_frames_tmp_dir))
         if mode == 1:
+            #使用扩展库libxvid将avi转码成mp4, "-qscale:v", "1" 意思是高质量,  -an: 去掉音频,
             call(["ffmpeg", "-i", f"{video.file.path}", "-c:v", "libxvid", "-qscale:v", "1", "-an",
                   jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "video.mp4")])
+            #抽帧，-vf select=eq(pict_type\,I): 参数提取关键帧
+            #-vsync vfr:删除重复帧
             call(["ffmpeg", "-i", jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "video.mp4"), "-vf",
                   "select=eq(pict_type\,I)", "-vsync", "vfr",
                   jj(f"{settings.TMP_DIR}", f"{all_frames_tmp_dir}", "%06d.jpeg")])
         else:
+            print("-----img path=".jj(settings.TMP_DIR, all_frames_tmp_dir, "%06d.bmp"))
+            #-q:v表示存储jpeg的图像质量，一般2是高质量
+            #-vf select=not(mod(n\\,15)): 使用select=not(mod(n\\,15))，即15帧
             call(["ffmpeg", "-i", video.file.path, "-vf", "select=not(mod(n\\,15))", "-vsync", "vfr", "-q:v", "2",
                   jj(settings.TMP_DIR, all_frames_tmp_dir, "%06d.bmp")])
         frames_paths = []
@@ -91,13 +105,15 @@ class KeyFramesExtractor:
         model_file = caffe_root + "/models/bvlc_googlenet/deploy.prototxt"
         pretrained = caffe_root + "/models/bvlc_googlenet/bvlc_googlenet.caffemodel"
         if not os.path.isfile(pretrained):
-            print("PRETRAINED Model not found.")
+            print("PRETRAINED Model not found. need download bvlc_googlenet.caffemodel")
 
         net = caffe.Net(model_file, pretrained, caffe.TEST)
         net.blobs["data"].reshape(batch_size, 3, 224, 224)
 
+        #读取均值文件
         mu = np.load(caffe_root + "/python/caffe/imagenet/ilsvrc_2012_mean.npy")
         mu = mu.mean(1).mean(1)
+        #模型预处理
         transformer = caffe.io.Transformer({"data": net.blobs["data"].data.shape})
         transformer.set_transpose("data", (2, 0, 1))
         transformer.set_mean("data", mu)
@@ -119,7 +135,7 @@ class KeyFramesExtractor:
     def _get_probs(features, gpu=True, mode=0):
         model_cache_key = "keyframes_rl_model_cache_" + str(mode)
         model = cache.get(model_cache_key)  # get model from cache
-
+        #什么模型？高亮 or 关键帧识别
         if model is None:
             if mode == 1:
                 model_path = "keyframes_rl/pretrained_model/model_1.pth.tar"
@@ -169,6 +185,7 @@ class KeyFramesExtractor:
     @staticmethod
     @profile
     def _get_popularity_chosen_frames(frames, features, image_assessment_mode=0, n_frames=10):
+        #帧图像评估模式:分越高则选择该帧
         if image_assessment_mode == 1:
             model_cache_key = "popularity_model_cache"
             model = cache.get(model_cache_key)  # get model from cache
@@ -183,6 +200,7 @@ class KeyFramesExtractor:
                 x = frame["frame"]
                 frame["popularity"] = nima_model.get_assessment_score(x)
         chosen_frames = []
+        #分越高则选择该帧
         for frame_0, frame_1 in zip(frames[0::2], frames[1::2]):
             if frame_0["popularity"] > frame_1["popularity"]:
                 chosen_frames.append(frame_0)

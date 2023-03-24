@@ -15,7 +15,8 @@ class NeuralImageAssessment:
         if not os.path.exists(settings.NIMA_MODEL_PATH):
             raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), settings.NIMA_MODEL_PATH)
         self.graph = tf.Graph()
-        config = tf.ConfigProto()
+        #增加了参数,以支持cpu
+        config = tf.ConfigProto(allow_soft_placement=True)
         config.gpu_options.per_process_gpu_memory_fraction = 0.2
         config.gpu_options.allow_growth = True
         self.session = tf.Session(graph=self.graph, config=config)

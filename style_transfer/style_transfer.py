@@ -20,12 +20,17 @@ class StyleTransfer():
     @classmethod
     @profile
     def get_stylized_frames(cls, frames, style_transfer_mode=0, gpu=settings.GPU):
+        #风格模式: 0-默认好莱坞漫威风格漫画, 1-宫崎骏风格漫画，2-细田守风格漫画，3-红辣椒风格(感觉不很好看)，4-新海诚风格漫画
         if style_transfer_mode == 0:
             return cls._comix_gan_stylize(frames=frames)
         elif style_transfer_mode == 1:
             return cls._cartoon_gan_stylize(frames, gpu=gpu, style='Hayao')
         elif style_transfer_mode == 2:
             return cls._cartoon_gan_stylize(frames, gpu=gpu, style='Hosoda')
+        elif style_transfer_mode == 3:
+            return cls._cartoon_gan_stylize(frames, gpu=gpu, style='Paprika')
+        elif style_transfer_mode == 4:
+            return cls._cartoon_gan_stylize(frames, gpu=gpu, style='Shinkai')
 
     @staticmethod
     def _resize_images(frames, size=384):
@@ -46,6 +51,7 @@ class StyleTransfer():
 
     @classmethod
     def _comix_gan_stylize(cls, frames):
+        #大小resize
         if max(frames[0].shape) > settings.MAX_FRAME_SIZE_FOR_STYLE_TRANSFER:
             frames = cls._resize_images(frames, size=settings.MAX_FRAME_SIZE_FOR_STYLE_TRANSFER)
 
@@ -62,16 +68,19 @@ class StyleTransfer():
 
     @classmethod
     def _cartoon_gan_stylize(cls, frames, gpu=True, style='Hayao'):
-        if style == 'Hayao':
-            model_cache_key = 'model_cache_hayao'
-            model = cache.get(model_cache_key)  # get model from cache
+        # if style == 'Hayao':
+        #     model_cache_key = 'model_cache_hayao'
+        #     model = cache.get(model_cache_key)  # get model from cache
+        #
+        # elif style == 'Hosoda':
+        #     model_cache_key = 'model_cache_hosoda'
+        #     model = cache.get(model_cache_key)  # get model from cache
+        #
+        # else:
+        #     raise Exception('No such CartoonGAN model!')
+        model_cache_key = 'model_cache_'.style
+        model = cache.get(model_cache_key)  # get model from cache
 
-        elif style == 'Hosoda':
-            model_cache_key = 'model_cache_hosoda'
-            model = cache.get(model_cache_key)  # get model from cache
-
-        else:
-            raise Exception('No such CartoonGAN model!')
 
         if model is None:
             # load pretrained model

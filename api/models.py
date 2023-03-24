@@ -35,16 +35,21 @@ class Video(models.Model):
             raise TooLargeFile()
 
     def create_comix(self, yt_url='', frames_mode=0, rl_mode=0, image_assessment_mode=0, style_transfer_mode=0):
+
+        #获得关键帧
         (keyframes, keyframes_timings), keyframes_extraction_time = KeyFramesExtractor.get_keyframes(
             video=self,
             frames_mode=frames_mode,
             rl_mode=rl_mode,
             image_assessment_mode=image_assessment_mode
         )
+        #风格化处理
         stylized_keyframes, stylization_time = StyleTransfer.get_stylized_frames(frames=keyframes,
                                                                                  style_transfer_mode=style_transfer_mode)
+        #布局
         comic_image, layout_generation_time = LayoutGenerator.get_layout(frames=stylized_keyframes)
 
+        #创建
         comic, from_nparray_time = Comic.create_from_nparray(nparray=comic_image,
                                                              video=self,
                                                              yt_url=yt_url,
@@ -78,10 +83,12 @@ class Comic(models.Model):
     @profile
     def create_from_nparray(cls, nparray, video, yt_url, frames_mode,
                             rl_mode, image_assessment_mode, style_transfer_mode):
+        #将图片存在到tmp目录
         tmp_name = uuid.uuid4().hex + ".png"
         cv2.imwrite(jj(settings.TMP_DIR, tmp_name), nparray)
         with open(jj(settings.TMP_DIR, tmp_name), mode="rb") as tmp_file:
             comic_image = File(tmp_file, name=tmp_name)
+            #保存至数据库
             comic = Comic.objects.create(file=comic_image,
                                          video=video,
                                          yt_url=yt_url,
