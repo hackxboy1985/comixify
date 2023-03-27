@@ -27,7 +27,7 @@ with open(os.path.join(BASE_DIR, 'secretkey.txt')) as f:
 #DEBUG = os.environ.get('DEBUG') == 'true'
 DEBUG = 'true'
 
-ALLOWED_HOSTS = ['0.0.0.0', 'comixify.ii.pw.edu.pl', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['182.92.206.60', 'comixify.ii.pw.edu.pl', 'localhost', '127.0.0.1']
 
 # Application definition
 
