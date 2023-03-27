@@ -3,6 +3,7 @@ import uuid
 
 import cv2
 import pafy
+import numpy as np
 from django.conf import settings
 from django.core.files import File
 from django.db import models
@@ -74,10 +75,10 @@ class Video(models.Model):
         #风格化处理
         stylized_keyframes, stylization_time = StyleTransfer.get_stylized_frames(frames=frames,
                                                                                  style_transfer_mode=style_transfer_mode)
-
-        #comic_image = np.hstack(stylized_keyframes[:2])
+        comic_image = np.hstack(stylized_keyframes[:1])
+        
         #创建保存文件及数据库
-        comic, from_nparray_time = Comic.create_from_nparray(nparray=stylized_keyframes,
+        comic, from_nparray_time = Comic.create_from_nparray(nparray=comic_image,
                                                              video=self,
                                                              yt_url='',
                                                              frames_mode='0',
