@@ -95,15 +95,15 @@ class StyleTransfer():
         for img in frames:
             input_image = transforms.ToTensor()(img).unsqueeze(0)
 
-            # preprocess, (-1, 1)
+            # preprocess, (-1, 1) 预处理
             input_image = -1 + 2 * input_image
             input_image = Variable(input_image).cuda() if gpu else Variable(input_image).float()
 
-            # forward
+            # forward 风格化转换
             output_image = model(input_image)
             output_image = output_image[0]
 
-            # deprocess, (0, 1)
+            # deprocess, (0, 1) 后处理变成numpy类型变量
             output_image = (output_image.data.cpu().float() * 0.5 + 0.5).numpy()
 
             # switch channels -> (c, h, w) -> (h, w, c)

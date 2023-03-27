@@ -24,9 +24,10 @@ with open(os.path.join(BASE_DIR, 'secretkey.txt')) as f:
     SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG') == 'true'
+#DEBUG = os.environ.get('DEBUG') == 'true'
+DEBUG = 'true'
 
-ALLOWED_HOSTS = ['35.241.250.34', 'comixify.ii.pw.edu.pl', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['0.0.0.0', 'comixify.ii.pw.edu.pl', 'localhost', '127.0.0.1']
 
 # Application definition
 
@@ -84,7 +85,7 @@ DATABASES = {
         'USER': 'postgres',
         'HOST': 'db',
         'PORT': '5432',
-        'PASSWORD': 'postgres',
+        'PASSWORD': 'root123',
         'CONN_MAX_AGE': 60,
     }
 }
@@ -139,7 +140,7 @@ PERMITTED_VIDEO_EXTENSIONS = ['mp4', 'avi']
 MAX_FILE_SIZE = 50000000
 NUMBERS_OF_FRAMES_TO_SHOW = 10
 TMP_DIR = 'tmp/'
-GPU = True
+GPU = False
 
 FEATURE_BATCH_SIZE = 32
 DEFAULT_FRAMES_SAMPLING_MODE = 0
