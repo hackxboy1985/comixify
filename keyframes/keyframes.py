@@ -21,6 +21,7 @@ from popularity.models import PopularityPredictor
 from neural_image_assessment.model import NeuralImageAssessment
 from keyframes.kts import cpd_auto
 from keyframes.utils import batch
+from PIL import Image
 
 logger = logging.getLogger(__name__)
 
@@ -97,6 +98,12 @@ class KeyFramesExtractor:
         frame = caffe.io.load_image(frame_path)
         frames.append(frame)
         return frames
+
+    @staticmethod
+    def save_frame(frame,frame_path):
+        img = Image.fromarray(frame.astype('uint8'))  # convert image to uint8
+        img.save(frame_path + '.png')
+        return
 
     @staticmethod
     @profile

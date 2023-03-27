@@ -72,11 +72,17 @@ class Video(models.Model):
 
     def t_img(self,style_transfer_mode = 0):
         frames = KeyFramesExtractor._get_frame(self.file.path)
+
         #风格化处理
         stylized_keyframes, stylization_time = StyleTransfer.get_stylized_frames(frames=frames,
                                                                                  style_transfer_mode=style_transfer_mode)
-        comic_image = np.hstack(stylized_keyframes[:1])
-        
+        # padded_img = null
+        comic_image = LayoutGenerator._pad_images(stylized_keyframes);
+        # for img in frames:
+        #     padded_img = cv2.copyMakeBorder(img, 5, 5, 5, 5, cv2.BORDER_CONSTANT, value=(255, 255, 255))
+        # padded_img = cv2.copyMakeBorder(frames[0], 5, 5, 5, 5, cv2.BORDER_CONSTANT, value=(255, 255, 255))
+        # comic_image = np.hstack(stylized_keyframes[:1])
+
         #创建保存文件及数据库
         comic, from_nparray_time = Comic.create_from_nparray(nparray=comic_image,
                                                              video=self,
