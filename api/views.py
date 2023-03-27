@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Video, Comic
-from .serializers import VideoSerializer, YouTubeDownloadSerializer
+from .serializers import VideoSerializer, ImgSerializer, YouTubeDownloadSerializer
 
 
 class Comixify(APIView):
@@ -48,7 +48,7 @@ class ComixifyImg(APIView):
         Receives video, and returns comic image
         """
 
-        serializer = VideoSerializer(data=request.data)
+        serializer = ImgSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         video_file = serializer.validated_data["file"]
         # frames_mode = serializer.validated_data["frames_mode"]

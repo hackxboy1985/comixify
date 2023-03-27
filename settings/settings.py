@@ -137,7 +137,9 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 PERMITTED_VIDEO_EXTENSIONS = ['mp4', 'avi']
+PERMITTED_IMG_EXTENSIONS = ['jpeg', 'jpg', 'png']
 MAX_FILE_SIZE = 50000000
+MAX_IMG_FILE_SIZE = 5000000
 NUMBERS_OF_FRAMES_TO_SHOW = 10
 TMP_DIR = 'tmp/'
 GPU = False
