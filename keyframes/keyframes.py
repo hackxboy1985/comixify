@@ -92,6 +92,13 @@ class KeyFramesExtractor:
         return frames
 
     @staticmethod
+    def _get_frame(frame_path):
+        frames = []
+        frame = caffe.io.load_image(frame_path)
+        frames.append(frame)
+        return frames
+
+    @staticmethod
     @profile
     def _get_features(frames, gpu=True, batch_size=1):
         caffe_root = os.environ.get("CAFFE_ROOT")

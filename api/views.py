@@ -40,6 +40,35 @@ class Comixify(APIView):
         video.file.delete()
         return Response(response)
 
+class ComixifyImg(APIView):
+    parser_classes = (FormParser, MultiPartParser)
+
+    def post(self, request):
+        """
+        Receives video, and returns comic image
+        """
+
+        serializer = VideoSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        video_file = serializer.validated_data["file"]
+        # frames_mode = serializer.validated_data["frames_mode"]
+        # rl_mode = serializer.validated_data["rl_mode"]
+        # image_assessment_mode = serializer.validated_data["image_assessment_mode"]
+        style_transfer_mode = serializer.validated_data["style_transfer_mode"]
+
+        video = Video.objects.create(file=video_file)
+        comix, timings = video.t_img(
+            style_transfer_mode=style_transfer_mode
+        )
+
+        response = {
+            "status_message": "ok",
+            "comic": comix.file.url,
+            "timings": timings,
+        }
+        # Remove to spare storage
+        video.file.delete()
+        return Response(response)
 
 class ComixifyFromYoutube(APIView):
     def post(self, request):
