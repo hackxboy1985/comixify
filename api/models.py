@@ -140,7 +140,7 @@ class Comic(models.Model):
         print('create_from_nparray2 in')
         #将图片存在到tmp目录
         #tmp_name = uuid.uuid4().hex + ".png"
-        KeyFramesExtractor.save_frame(comic_image, '/media/comic/' + uuid.uuid4().hex)
+        KeyFramesExtractor.save_frame(comic_image, 'media/comic/' + uuid.uuid4().hex)
         print('create_from_nparray2 1')
         # cv2.imwrite(jj(settings.TMP_DIR, tmp_name), nparray)
         # with open(jj(settings.TMP_DIR, tmp_name), mode="rb") as tmp_file:
