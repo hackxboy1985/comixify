@@ -78,7 +78,7 @@ class StyleTransfer():
         #
         # else:
         #     raise Exception('No such CartoonGAN model!')
-        model_cache_key = 'model_cache_'.style
+        model_cache_key = 'model_cache_' + style
         model = cache.get(model_cache_key)  # get model from cache
         print("cartoon_gan_stylize model_cache_key=".model_cache_key)
 
