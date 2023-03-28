@@ -57,13 +57,13 @@ class ComixifyImg(APIView):
         style_transfer_mode = serializer.validated_data["style_transfer_mode"]
 
         video = Video.objects.create(file=video_file)
-        comix, timings = video.t_img(
+        timings = video.t_img(
             style_transfer_mode=style_transfer_mode
         )
 
         response = {
             "status_message": "ok",
-            "comic": comix.file.url,
+            #"comic": comix.file.url,
             "timings": timings,
         }
         # Remove to spare storage
