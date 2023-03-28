@@ -22,6 +22,7 @@ from neural_image_assessment.model import NeuralImageAssessment
 from keyframes.kts import cpd_auto
 from keyframes.utils import batch
 from PIL import Image
+from scipy import misc
 
 logger = logging.getLogger(__name__)
 
@@ -101,8 +102,14 @@ class KeyFramesExtractor:
 
     @staticmethod
     def save_frame(frame,frame_path):
-        img = Image.fromarray(frame.astype('uint8'))  # convert image to uint8
+        print('save_frame - path:' + frame_path)
+        img = Image.fromarray(frame)  # convert image to uint8:  frame.astype('uint8')
         img.save(frame_path + '.png')
+        print('save_frame - use Image:' + frame_path + '.png')
+        misc.imsave(frame_path+'_.png', frame)
+        print('save_frame - use misc:' + frame_path + '.png')
+        #io.save
+        print('save_frame - finish:');
         return
 
     @staticmethod
