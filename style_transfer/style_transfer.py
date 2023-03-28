@@ -80,7 +80,7 @@ class StyleTransfer():
         #     raise Exception('No such CartoonGAN model!')
         model_cache_key = 'model_cache_' + style
         model = cache.get(model_cache_key)  # get model from cache
-        print("cartoon_gan_stylize model_cache_key=".model_cache_key)
+        print("cartoon_gan_stylize model_cache_key="+model_cache_key)
 
         if model is None:
             # load pretrained model
@@ -90,7 +90,7 @@ class StyleTransfer():
             model.cuda() if gpu else model.float()
             cache.set(model_cache_key, model, None)  # None is the timeout parameter. It means cache forever
         if model is None:
-            print("cartoon_gan_stylize model is None, style=".model_cache_key)
+            print("cartoon_gan_stylize model is None, style="+model_cache_key)
 
         frames = cls._resize_images(frames, size=450)
         stylized_imgs = []
@@ -111,7 +111,7 @@ class StyleTransfer():
             # switch channels -> (c, h, w) -> (h, w, c)
             output_image = np.rollaxis(output_image, 0, 3)
 
-            print('output_image='.type(output_image))
+            print('output_image='+type(output_image))
 
             # append image to result images
             stylized_imgs.append(255 * output_image)
