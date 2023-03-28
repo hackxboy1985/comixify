@@ -83,22 +83,27 @@ class Video(models.Model):
         # padded_img = cv2.copyMakeBorder(frames[0], 5, 5, 5, 5, cv2.BORDER_CONSTANT, value=(255, 255, 255))
         # comic_image = np.hstack(stylized_keyframes[:1])
 
+        path = 'media/comic/'
+        img_name = uuid.uuid4().hex + '.png'
+        #+ ".png"
+        KeyFramesExtractor.save_frame(stylized_keyframes[0], path, img_name)
 
         #创建保存文件及数据库
-        comic, save_time = Comic.create_from_nparray2(comic_image=stylized_keyframes[0],
-                                                             video=self,
-                                                             yt_url='',
-                                                             frames_mode='0',
-                                                             rl_mode='0',
-                                                             image_assessment_mode='0',
-                                                             style_transfer_mode=style_transfer_mode)
+        # comic, save_time = Comic.create_from_nparray2(comic_image=stylized_keyframes[0],
+        #                                                      video=self,
+        #                                                      yt_url='',
+        #                                                      frames_mode='0',
+        #                                                      rl_mode='0',
+        #                                                      image_assessment_mode='0',
+        #                                                      style_transfer_mode=style_transfer_mode)
 
         timings = {
-            'save_time': save_time,
+            # 'save_time': save_time,
+            'path' : path + img_name,
             'stylization_time': stylization_time
         }
 
-        return comic, timings
+        return timings
 
 
 
@@ -139,14 +144,17 @@ class Comic(models.Model):
 
         print('create_from_nparray2 in')
         #将图片存在到tmp目录
-        #tmp_name = uuid.uuid4().hex + ".png"
-        KeyFramesExtractor.save_frame(comic_image, 'media/comic/' + uuid.uuid4().hex)
+        path = 'media/comic/'
+        img_name = uuid.uuid4().hex + '.png'
+        # + ".png"
+        KeyFramesExtractor.save_frame(comic_image, path, img_name)
+
         print('create_from_nparray2 1')
         # cv2.imwrite(jj(settings.TMP_DIR, tmp_name), nparray)
         # with open(jj(settings.TMP_DIR, tmp_name), mode="rb") as tmp_file:
         # comic_image = File(tmp_file, name=tmp_name)
         #保存至数据库
-        comic = Comic.objects.create(file=comic_image,
+        comic = Comic.objects.create(file=comic_image.astype('uint8'),
                                      video=video,
                                      yt_url=yt_url,
                                      frames_mode=frames_mode,

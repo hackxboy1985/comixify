@@ -102,14 +102,16 @@ class KeyFramesExtractor:
         return frames
 
     @staticmethod
-    def save_frame(frame,frame_path):
+    @profile
+    def save_frame(frame,path,name):
         print('-----------------------------------------------------------------');
-        print('save_frame - path:' + frame_path)
+        print('save_frame - path:' + path+name)
         img = Image.fromarray(frame.astype('uint8'))  # convert image to uint8:  frame.astype('uint8')
-        img.save(frame_path + '.png')
-        print('save_frame - use Image:' + frame_path + '.png')
-        # misc.imsave(frame_path+'_.png', frame)
-        # print('save_frame - use misc:' + frame_path + '_.png')
+        img.save(path+name)
+        # 第2种保存npy数组到图片的方法
+        #print('save_frame - use Image:' + path+name)
+        # misc.imsave(path+name, frame)
+        # print('save_frame - use misc:' + path+name)
         #io.save
         print('save_frame - finish:');
         return
