@@ -146,11 +146,11 @@ class Comic(models.Model):
         # with open(jj(settings.TMP_DIR, tmp_name), mode="rb") as tmp_file:
         # comic_image = File(tmp_file, name=tmp_name)
         #保存至数据库
-        # comic = Comic.objects.create(file=comic_image,
-        #                              video=video,
-        #                              yt_url=yt_url,
-        #                              frames_mode=frames_mode,
-        #                              rl_mode=rl_mode,
-        #                              image_assessment_mode=image_assessment_mode,
-        #                              style_transfer_mode=style_transfer_mode)
+        comic = Comic.objects.create(file=comic_image,
+                                     video=video,
+                                     yt_url=yt_url,
+                                     frames_mode=frames_mode,
+                                     rl_mode=rl_mode,
+                                     image_assessment_mode=image_assessment_mode,
+                                     style_transfer_mode=style_transfer_mode)
         return comic

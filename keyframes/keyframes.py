@@ -108,8 +108,8 @@ class KeyFramesExtractor:
         img = Image.fromarray(frame.astype('uint8'))  # convert image to uint8:  frame.astype('uint8')
         img.save(frame_path + '.png')
         print('save_frame - use Image:' + frame_path + '.png')
-        misc.imsave(frame_path+'_.png', frame)
-        print('save_frame - use misc:' + frame_path + '.png')
+        # misc.imsave(frame_path+'_.png', frame)
+        # print('save_frame - use misc:' + frame_path + '_.png')
         #io.save
         print('save_frame - finish:');
         return
