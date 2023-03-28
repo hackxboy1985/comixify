@@ -97,13 +97,15 @@ class KeyFramesExtractor:
     def _get_frame(frame_path):
         frames = []
         frame = caffe.io.load_image(frame_path)
-        frames.append(frame)
+        #frames.append(frame)
+        frames.append(img_as_ubyte(frame)[..., ::-1])
         return frames
 
     @staticmethod
     def save_frame(frame,frame_path):
+        print('-----------------------------------------------------------------');
         print('save_frame - path:' + frame_path)
-        img = Image.fromarray(frame)  # convert image to uint8:  frame.astype('uint8')
+        img = Image.fromarray(frame.astype('uint8'))  # convert image to uint8:  frame.astype('uint8')
         img.save(frame_path + '.png')
         print('save_frame - use Image:' + frame_path + '.png')
         misc.imsave(frame_path+'_.png', frame)
