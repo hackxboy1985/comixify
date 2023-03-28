@@ -111,7 +111,7 @@ class StyleTransfer():
             # switch channels -> (c, h, w) -> (h, w, c)
             output_image = np.rollaxis(output_image, 0, 3)
 
-            print('output_image='+type(output_image))
+            #print('output_image=',type(output_image))
 
             # append image to result images
             stylized_imgs.append(255 * output_image)
