@@ -99,11 +99,10 @@ class Video(models.Model):
 
         timings = {
             # 'save_time': save_time,
-            'path' : path + img_name,
             'stylization_time': stylization_time
         }
 
-        return timings
+        return path + img_name, timings
 
 
 
