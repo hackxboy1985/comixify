@@ -13,7 +13,8 @@ from ComixGAN.model import ComixGAN
 from utils import profile
 
 # load pretrained model
-comixGAN = ComixGAN()
+#comixGAN = ComixGAN()
+comixGAN = None
 
 
 class StyleTransfer():
@@ -51,6 +52,8 @@ class StyleTransfer():
 
     @classmethod
     def _comix_gan_stylize(cls, frames):
+        if comixGAN is None:
+            comixGAN = ComixGAN()
         #大小resize
         if max(frames[0].shape) > settings.MAX_FRAME_SIZE_FOR_STYLE_TRANSFER:
             frames = cls._resize_images(frames, size=settings.MAX_FRAME_SIZE_FOR_STYLE_TRANSFER)
@@ -92,6 +95,7 @@ class StyleTransfer():
         if model is None:
             print("cartoon_gan_stylize model is None, style="+model_cache_key)
 
+        #resize
         frames = cls._resize_images(frames, size=450)
         stylized_imgs = []
         for img in frames:
